@@ -13,8 +13,8 @@ public:
             if ((i > 0) && (nums[i] == nums[i - 1]))
                 continue;
 
-            auto l = i + 1;
-            auto r = nums.size() - 1;
+            int l = i + 1;
+            int r = nums.size() - 1;//Not to be auto, otherwise in line 35, r will be the large number cause error
             while (l < r)
             {
                 int s = nums[i] + nums[l] + nums[r];
