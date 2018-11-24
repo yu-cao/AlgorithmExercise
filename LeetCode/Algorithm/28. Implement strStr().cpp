@@ -1,3 +1,6 @@
+//Notice: this two type must be the same "int"
+//Never operater the signed number and the unsigned number!
+//Especially in the loop condition!
 class Solution {
 public:
     int strStr(string haystack, string needle) {
