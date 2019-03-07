@@ -1,36 +1,35 @@
-#include<vector>
-using namespace std;
-
+//使用分治策略，使得代码可读性更强，条理更清晰
 class Solution {
 public:
-    double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
-        int m = nums1.size(), n = nums2.size();
-	    int l = (m + n + 1) / 2;
-	    int r = (m + n + 2) / 2;
-	    return (getkth(nums1,0, nums2,0, l) + getkth(nums1,0, nums2,0, r)) / 2.0;
-    }
+	double findMedianSortedArrays(vector<int>& nums1, vector<int>& nums2) {
+		int m = nums1.size(), n = nums2.size();
+		int l = (m + n + 1) / 2;
+		int r = (m + n + 2) / 2;
+		return (getkth(nums1, 0, nums1.size() - 1, nums2, 0, nums2.size() - 1, l) +
+				getkth(nums1, 0, nums1.size() - 1, nums2, 0, nums2.size() - 1, r)) / 2.0;
+	}
 
-    double getkth(vector<int>& A,int aStart, vector<int>& B, int bStart, int k)
-    {
-        if(A.size()==0) return B[bStart + k -1];
-        if(B.size()==0) return A[aStart + k -1];
-        if (aStart > A.size() - 1) return B[bStart + k - 1];  //当a的起始地址已经到了a最后          
-        if (bStart > B.size() - 1) return A[aStart + k - 1];                
-        if (k == 1) return min(A[aStart], B[bStart]);
+	double getkth(vector<int> &A, int aStart, int aEnd, vector<int> &B, int bStart, int bEnd, int k)
+	{
+		if (aStart > aEnd) return B[bStart + k - 1];
+		if (bStart > bEnd) return A[aStart + k - 1];
 
-        int aMid = 100000000, bMid = 100000000;
-        if (aStart + k/2 - 1 < A.size()) aMid = A[aStart + k/2 - 1];  //计算出在A[aStart,final]中的中位数
-        if (bStart + k/2 - 1 < B.size()) bMid = B[bStart + k/2 - 1];        
-        
-        if (aMid < bMid) 
-            return getkth(A, aStart + k/2, B, bStart,       k - k/2);// Check: aRight + bLeft 
-        else 
-            return getkth(A, aStart,       B, bStart + k/2, k - k/2);// Check: bRight + aLeft
-    }
+		int aMid = (aEnd - aStart) / 2 + aStart;
+		int bMid = (bEnd - bStart) / 2 + bStart;
 
-    int min(int a, int b)
-    {
-        if(a>=b) return b;
-        else return a;
-    }
+		if (A[aMid] < B[bMid])
+		{
+			if (k <= (aMid - aStart) + (bMid - bStart) + 1)//k小于等于当前的两个数组中位数左半边之和，且A中位数比B小时，B中位数右侧的一定不可能是待选项，去掉
+				return getkth(A, aStart, aEnd, B, bStart, bMid - 1, k);
+			else//k大于当前的两个数组中位数左半边之和，且A中位数比B小时，显然A中位数左边边都是小于我们要找的中位数的，保留，把k和begin刷新
+				return getkth(A, aMid + 1, aEnd, B, bStart, bEnd, k - (aMid - aStart) - 1);
+		}
+		else
+		{
+			if (k <= (aMid - aStart) + (bMid - bStart) + 1)
+				return getkth(A, aStart, aMid - 1, B, bStart, bEnd, k);
+			else
+				return getkth(A, aStart, aEnd, B, bMid + 1, bEnd, k - (bMid - bStart) - 1);
+		}
+	}
 };
